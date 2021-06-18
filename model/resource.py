@@ -1,4 +1,6 @@
 import mongoengine as me
+import math
+
 
 
 class Email(me.Document):
@@ -19,5 +21,5 @@ class Address(me.Document):
 class Proxy(me.Document):
     server = me.StringField(required=True)
     origin_ip = me.StringField(required=True)
-    times = me.IntField()
+    times = me.IntField(default=0)
     country = me.StringField(required=True)
