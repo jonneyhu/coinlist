@@ -1,3 +1,5 @@
+from _md5 import md5
+
 from flask_restful import Resource, reqparse
 
 from application import app
@@ -7,7 +9,7 @@ from flask import g
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 auth = HTTPTokenAuth(scheme='Token')
-serializer = Serializer(app.config['SECRET_KEY'], expires_in=600)
+serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600*24*15)
 
 
 # 认证回调函数
@@ -19,7 +21,7 @@ def verify_token(token):
     except:
         return False
     if 'username' in data:
-        g.user = User.objects(username=data['username']).get_or_404()
+        g.user = User.objects(username=data['username']).first()
         return True
     return False
 
@@ -38,3 +40,12 @@ class UserResource(Resource):
         user.set_password("123456")
         user.save()
         return {'code': 200, 'msg': 'success'}
+
+
+class Login(Resource):
+    def get(self):
+        args = parser.parse_args()
+        password = md5(args['password'].encode('utf8')).hexdigest()
+        user = User.objects(username=args['username'], password=password).first()
+        return {'code': 200, 'data': user.generate_token()}
+

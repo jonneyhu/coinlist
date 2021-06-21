@@ -19,6 +19,6 @@ class User(me.Document):
 
     def generate_token(self):
         # 实例化一个签名序列化对象 serializer，有效期 10 分钟
-        serializer = Serializer(app.config['SECRET_KEY'], expires_in=600)
+        serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600*24*15)
         token = serializer.dumps({'username':self.username})
-        return token
+        return token.decode()
