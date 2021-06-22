@@ -9,7 +9,7 @@ from flask import g
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 auth = HTTPTokenAuth(scheme='Token')
-serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600*24*15)
+serializer = Serializer(app.config['SECRET_KEY'], expires_in=3600 * 24 * 15)
 
 
 # 认证回调函数
@@ -36,8 +36,11 @@ class UserResource(Resource):
         pass
 
     def post(self):
-        user = User(username='jonney')
-        user.set_password("123456")
+        args = parser.parse_args()
+        if User.objects(username=args['username']).first():
+            return {'code': 400, 'msg': '用户名已存在'}
+        user = User(username=args['username'])
+        user.set_password(args['password'])
         user.save()
         return {'code': 200, 'msg': 'success'}
 
@@ -49,3 +52,7 @@ class Login(Resource):
         user = User.objects(username=args['username'], password=password).first()
         return {'code': 200, 'data': user.generate_token()}
 
+
+class AboutUs(Resource):
+    def get(self):
+        pass

@@ -12,3 +12,5 @@ def setup(app):
     api.add_resource(AccountResource, '/account')
     api.add_resource(AvailableResource, '/available')
     api.add_resource(MakeAccount, '/account/make')
+    api.add_resource(SelfAccount, '/account/self')
+    api.add_resource(SyncAccount, '/account/sync')

@@ -39,6 +39,19 @@ make_parser.add_argument('email', type=str)
 make_parser.add_argument('auth_info', type=str)
 make_parser.add_argument('secret', type=str)
 
+sync_parser = reqparse.RequestParser()
+sync_parser.add_argument('email', type=str)
+
+distribute_parser = reqparse.RequestParser()
+distribute_parser.add_argument('username', type=str)
+distribute_parser.add_argument('accounts')
+
+conditions_parser = reqparse.RequestParser()
+conditions_parser.add_argument('email')
+conditions_parser.add_argument('check_status')
+conditions_parser.add_argument('country')
+conditions_parser.add_argument('email')
+
 
 class EmailResource(Resource):
     def get(self):
@@ -100,6 +113,58 @@ class AccountResource(Resource):
         page = Page(results, args['page'], args['limit'])
         return {'code': 200, 'msg': 'success', 'data': page.page()}
 
+    # 分配账户
+    @auth.login_required
+    def post(self):
+        args = distribute_parser.parse_args()
+        username = args['username']
+        accounts = args['accounts']
+        emails = db.email.find({'$in': {'email': accounts}})
+        if accounts and username:
+            db.account.update({'$in': {'email': [i['_id'] for i in emails]}}, {'$set': {'user': username}})
+        if not username:
+            db.account.update({'$in': {'email': emails}}, {'$set': {'user': g.user.username}})
+        return {'code': 200, 'msg': 'success'}
+
+
+class AvailableResource(Resource):
+    def get(self):
+        country = make_parser.parse_args()['country']
+        # 计算最小资源
+        email_count = db.email.find({'is_used': False}).count()
+        address_count = db.address.find({'is_used': False, 'country': country}).count()
+        proxies = db.proxy.find({'country': country, 'times': {'$lt': 5}})
+        proxy_count = 0
+        for p in proxies:
+            proxy_count += 5 - p['times']
+        s_count = sorted([email_count, address_count, proxy_count])
+        return {'code': 200, 'data': s_count[0]}
+
+
+class MakeAccount(Resource):
+    # 获取制作中的账户
+    @auth.login_required
+    def get(self):
+        def cursor(limit, skip):
+            result = db.account.aggregate([{'$match': {'operate_status': 0, 'operator': g.user.username}},
+                                           {'$lookup': {'from': 'email', 'localField': 'email', 'foreignField': '_id',
+                                                        'as': 'email_info'}},
+                                           {'$lookup': {'from': 'address', 'localField': 'address',
+                                                        'foreignField': '_id',
+                                                        'as': 'address_info'}},
+                                           {'$lookup': {'from': 'proxy', 'localField': 'proxy', 'foreignField': '_id',
+                                                        'as': 'proxy_info'}},
+                                           {'$project': {'email': 0, 'address': 0, 'proxy': 0}},
+                                           {'$limit': limit},
+                                           {'$skip': skip}
+                                           ])
+            count = db.account.find({'operate_status': 0, 'operator': g.user.username}).count()
+            return result, count
+
+        args = proxy_get_parser.parse_args()
+        page = Page(cursor, args['page'], args['limit'])
+        return {'code': 200, 'msg': 'success', 'data': page.page()}
+
     # 批量创建账户
     @auth.login_required
     def post(self):
@@ -151,46 +216,9 @@ class AccountResource(Resource):
 
                 return {'code': 200, 'msg': 'success'}
 
-
-class AvailableResource(Resource):
-    def get(self):
-        country = make_parser.parse_args()['country']
-        # 计算最小资源
-        email_count = db.email.find({'is_used': False}).count()
-        address_count = db.address.find({'is_used': False, 'country': country}).count()
-        proxies = db.proxy.find({'country': country, 'times': {'$lt': 5}})
-        proxy_count = 0
-        for p in proxies:
-            proxy_count += 5 - p['times']
-        s_count = sorted([email_count, address_count, proxy_count])
-        return {'code': 200, 'data': s_count[0]}
-
-
-class MakeAccount(Resource):
-    # 获取制作中的账户
-    @auth.login_required
-    def get(self):
-        def cursor(limit, skip):
-            result = db.account.aggregate([{'$match': {'operate_status': 0, 'operator': g.user.username}},
-                                  {'$lookup': {'from': 'email', 'localField': 'email', 'foreignField': '_id',
-                                               'as': 'email_info'}},
-                                  {'$lookup': {'from': 'address', 'localField': 'address', 'foreignField': '_id',
-                                               'as': 'address_info'}},
-                                  {'$lookup': {'from': 'proxy', 'localField': 'proxy', 'foreignField': '_id',
-                                               'as': 'proxy_info'}},
-                                  {'$project': {'email': 0, 'address': 0, 'proxy': 0}},
-                                  {'$limit': limit},
-                                  {'$skip': skip}
-                                  ])
-            count = db.account.find({'operate_status': 0, 'operator': g.user.username}).count()
-            return result,count
-        args = proxy_get_parser.parse_args()
-        page = Page(cursor, args['page'], args['limit'])
-        return {'code': 200, 'msg': 'success', 'data': page.page()}
-
     # 提交账户
     @auth.login_required
-    def post(self):
+    def put(self):
         args = make_parser.parse_args()
         email = db.email.find_one({'email': args['email']})
         db.account.update({'email': email['_id']},
@@ -198,3 +226,24 @@ class MakeAccount(Resource):
                                     'secret': args['secret'], 'operate_status': 1, 'submit_at': datetime.datetime.now()}
                            })
         return {'code': 200, 'msg': 'success'}
+
+
+# 我的账户
+class SelfAccount(Resource):
+    @auth.login_required
+    def get(self):
+        args = proxy_get_parser.parse_args()
+        results = db.account.find({'user': g.user.username})
+        page = Page(results, args['page'], args['limit'])
+        return {'code': 200, 'msg': 'success', 'data': page.page()}
+
+
+# 账户同步
+class SyncAccount(Resource):
+    def get(self):
+        args = sync_parser.parse_args()
+        emails = args['email']
+        print(emails)
+        emails = db.email.find({'$in': {'email': emails}})
+        results = db.account.find({'$in': {'email': emails}})
+        return {'code': 200, 'data': [r for r in results]}
