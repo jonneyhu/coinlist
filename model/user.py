@@ -8,6 +8,12 @@ class User(me.Document):
     password = me.StringField()
     level = me.IntField(default=0)
 
+    def keys(self):
+        return ('username','level')
+
+    def __getitem__(self, item):
+        return getattr(self,item)
+
     def set_password(self, password):
         h = md5(password.encode('utf8'))
         self.password = h.hexdigest()

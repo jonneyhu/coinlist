@@ -4,7 +4,7 @@ from flask import g
 from flask_restful import Resource, reqparse, fields, marshal_with
 import pymongo
 from model.resource import Proxy
-from resource import auth
+from .user import auth
 from util.page import Page
 
 client = pymongo.MongoClient(host='localhost', port=27017)
@@ -28,6 +28,10 @@ proxy_parser.add_argument('country', type=str, required=True)
 proxy_get_parser = reqparse.RequestParser()
 proxy_get_parser.add_argument('page', type=int, required=True)
 proxy_get_parser.add_argument('limit', type=int, default=10)
+proxy_get_parser.add_argument('email', type=str)
+proxy_get_parser.add_argument('register_status', type=int)
+proxy_get_parser.add_argument('use_status', type=int)
+proxy_get_parser.add_argument('country', type=str)
 
 account_parser = reqparse.RequestParser()
 account_parser.add_argument('amount', type=int, default=10)
@@ -108,9 +112,34 @@ class ProxyResource(Resource):
 class AccountResource(Resource):
     # 获取所有提交的账户
     def get(self):
-        results = db.account.find({'operate_status': 1})
         args = proxy_get_parser.parse_args()
-        page = Page(results, args['page'], args['limit'])
+        conditions = {'operate_status': 1}
+        if args['country']:
+            conditions['country'] = args['country']
+        if args['use_status']:
+            if args['use_status'] == 0:
+                conditions['user'] = ''
+            else:
+                conditions['user'] = {'$ne': ''}
+        if args['register_status']:
+            conditions['register_status'] = args['register_status']
+
+        def cursor(limit, skip):
+            result = db.account.aggregate([{'$match': conditions},
+                                           {'$lookup': {'from': 'email', 'localField': 'email', 'foreignField': '_id',
+                                                        'as': 'email_info'}},
+                                           {'$lookup': {'from': 'address', 'localField': 'address',
+                                                        'foreignField': '_id',
+                                                        'as': 'address_info'}},
+                                           {'$lookup': {'from': 'proxy', 'localField': 'proxy', 'foreignField': '_id',
+                                                        'as': 'proxy_info'}},
+                                           {'$project': {'email': 0, 'address': 0, 'proxy': 0}},
+                                           {'$limit': limit},
+                                           {'$skip': skip}
+                                           ])
+            count = db.account.find({'operate_status': 1}).count()
+            return result, count
+        page = Page(cursor, args['page'], args['limit'])
         return {'code': 200, 'msg': 'success', 'data': page.page()}
 
     # 分配账户
@@ -119,11 +148,11 @@ class AccountResource(Resource):
         args = distribute_parser.parse_args()
         username = args['username']
         accounts = args['accounts']
-        emails = db.email.find({'$in': {'email': accounts}})
+        emails = db.email.find({'email': {'$in': accounts}})
         if accounts and username:
-            db.account.update({'$in': {'email': [i['_id'] for i in emails]}}, {'$set': {'user': username}})
+            db.account.update({'email': {'$in': [i['_id'] for i in emails]}}, {'$set': {'user': username}})
         if not username:
-            db.account.update({'$in': {'email': emails}}, {'$set': {'user': g.user.username}})
+            db.account.update({'email': {'$in': emails}}, {'$set': {'user': g.user.username}})
         return {'code': 200, 'msg': 'success'}
 
 
@@ -201,6 +230,7 @@ class MakeAccount(Resource):
                         'proxy': proxies[i]['_id'],
                         'cl_password': '123456',
                         'cl_username': '',
+                        'country': country,
                         'user': '',
                         'register_status': 0,
                         'secret': '',
@@ -243,7 +273,6 @@ class SyncAccount(Resource):
     def get(self):
         args = sync_parser.parse_args()
         emails = args['email']
-        print(emails)
         emails = db.email.find({'$in': {'email': emails}})
         results = db.account.find({'$in': {'email': emails}})
         return {'code': 200, 'data': [r for r in results]}

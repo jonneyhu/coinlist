@@ -1,2 +1,2 @@
 from .user import *
-from .resource import *
+from .resources import *

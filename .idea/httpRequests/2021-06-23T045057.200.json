@@ -1,0 +1,21 @@
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "pages": 1,
+    "total": 2,
+    "data": [
+      {
+        "address": "日本东京",
+        "postcode": "999092",
+        "country": "日本"
+      },
+      {
+        "address": "日本东京",
+        "postcode": "999092",
+        "country": "日本",
+        "is_used": true
+      }
+    ]
+  }
+}

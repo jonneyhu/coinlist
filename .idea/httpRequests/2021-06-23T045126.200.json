@@ -1,0 +1,22 @@
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "pages": 1,
+    "total": 2,
+    "data": [
+      {
+        "server": "47.100.230.9:4000",
+        "origin_ip": "47.230.215.235",
+        "times": 2,
+        "country": "日本"
+      },
+      {
+        "server": "47.100.230.9:4000",
+        "origin_ip": "47.230.215.235",
+        "times": 0,
+        "country": "日本"
+      }
+    ]
+  }
+}
