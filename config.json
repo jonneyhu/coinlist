@@ -1,0 +1,25 @@
+{
+  "exchanges": {
+
+    "gateio": {
+      "key": "mjlpdje3ld-418fbbdf-b5a6e719-c5367",
+      "secret": "fc8add4e-c051ba47-7f75afb9-97d6a"
+    },
+    "huobi": {
+      "key": "mjlpdje3ld-418fbbdf-b5a6e719-c5367",
+      "secret": "fc8add4e-c051ba47-7f75afb9-97d6a"
+    },
+    "okex": {
+      "key": "",
+      "secret": ""
+    },
+    "mx": {
+      "key": "",
+      "secret": ""
+    }
+  },
+  "amount": 0,
+  "price": 0,
+  "symbol": "FIL/USDT",
+  "side": 0
+}

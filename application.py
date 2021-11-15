@@ -4,7 +4,7 @@ app = Flask(__name__)
 app.config.from_mapping(
     MONGODB_SETTINGS={
         'db': 'base',
-        'host': 'localhost',
+        'host': '127.0.0.1',
         'port': 27017,
         'connect': True,
         'username': 'root',

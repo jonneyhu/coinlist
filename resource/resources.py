@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from flask import g
 from flask_restful import Resource, reqparse, fields, marshal_with
@@ -7,7 +8,7 @@ from model.resource import Proxy
 from .user import auth
 from util.page import Page
 
-client = pymongo.MongoClient(host='localhost', port=27017)
+client = pymongo.MongoClient(host='127.0.0.1', port=27017)
 db = client.base
 
 email_parser = reqparse.RequestParser()
@@ -29,8 +30,8 @@ proxy_get_parser = reqparse.RequestParser()
 proxy_get_parser.add_argument('page', type=int, required=True)
 proxy_get_parser.add_argument('limit', type=int, default=10)
 proxy_get_parser.add_argument('email', type=str)
-proxy_get_parser.add_argument('register_status', type=int)
-proxy_get_parser.add_argument('use_status', type=int)
+proxy_get_parser.add_argument('register_status', type=str)
+proxy_get_parser.add_argument('use_status', type=str)
 proxy_get_parser.add_argument('country', type=str)
 
 account_parser = reqparse.RequestParser()
@@ -55,6 +56,10 @@ conditions_parser.add_argument('email')
 conditions_parser.add_argument('check_status')
 conditions_parser.add_argument('country')
 conditions_parser.add_argument('email')
+
+self_parser = reqparse.RequestParser()
+self_parser.add_argument('can_use', type=int)
+self_parser.add_argument('email', type=str)
 
 
 class EmailResource(Resource):
@@ -117,12 +122,12 @@ class AccountResource(Resource):
         if args['country']:
             conditions['country'] = args['country']
         if args['use_status']:
-            if args['use_status'] == 0:
+            if args['use_status'] == '0':
                 conditions['user'] = ''
             else:
                 conditions['user'] = {'$ne': ''}
         if args['register_status']:
-            conditions['register_status'] = args['register_status']
+            conditions['register_status'] = int(args['register_status'])
 
         def cursor(limit, skip):
             result = db.account.aggregate([{'$match': conditions},
@@ -139,6 +144,7 @@ class AccountResource(Resource):
                                            ])
             count = db.account.find({'operate_status': 1}).count()
             return result, count
+
         page = Page(cursor, args['page'], args['limit'])
         return {'code': 200, 'msg': 'success', 'data': page.page()}
 
@@ -147,12 +153,9 @@ class AccountResource(Resource):
     def post(self):
         args = distribute_parser.parse_args()
         username = args['username']
-        accounts = args['accounts']
+        accounts = json.loads(args['accounts'])
         emails = db.email.find({'email': {'$in': accounts}})
-        if accounts and username:
-            db.account.update({'email': {'$in': [i['_id'] for i in emails]}}, {'$set': {'user': username}})
-        if not username:
-            db.account.update({'email': {'$in': emails}}, {'$set': {'user': g.user.username}})
+        db.account.update({'email': {'$in': [i['_id'] for i in emails]}}, {'$set': {'user': username}})
         return {'code': 200, 'msg': 'success'}
 
 
@@ -232,6 +235,7 @@ class MakeAccount(Resource):
                         'cl_username': '',
                         'country': country,
                         'user': '',
+                        'can_use': 0,
                         'register_status': 0,
                         'secret': '',
                         'operator': g.user.username,
@@ -263,9 +267,35 @@ class SelfAccount(Resource):
     @auth.login_required
     def get(self):
         args = proxy_get_parser.parse_args()
-        results = db.account.find({'user': g.user.username})
-        page = Page(results, args['page'], args['limit'])
+        conditions = {'user': g.user.username}
+        if args['country']:
+            conditions['country'] = args['country']
+
+        def cursor(limit, skip):
+            result = db.account.aggregate([{'$match': conditions},
+                                           {'$lookup': {'from': 'email', 'localField': 'email', 'foreignField': '_id',
+                                                        'as': 'email_info'}},
+                                           {'$lookup': {'from': 'address', 'localField': 'address',
+                                                        'foreignField': '_id',
+                                                        'as': 'address_info'}},
+                                           {'$lookup': {'from': 'proxy', 'localField': 'proxy', 'foreignField': '_id',
+                                                        'as': 'proxy_info'}},
+                                           {'$project': {'email': 0, 'address': 0, 'proxy': 0}},
+                                           {'$limit': limit},
+                                           {'$skip': skip}
+                                           ])
+            count = db.account.find({'operate_status': 1}).count()
+            return result, count
+
+        page = Page(cursor, args['page'], args['limit'])
         return {'code': 200, 'msg': 'success', 'data': page.page()}
+
+    @auth.login_required
+    def post(self):
+        args = self_parser.parse_args()
+        email = db.email.find_one({'email': args['email']})
+        db.account.update({'email': email['_id']}, {'$set': {'can_use': args['can_use']}})
+        return {'code': 200, 'msg': 'success'}
 
 
 # 账户同步
@@ -273,6 +303,34 @@ class SyncAccount(Resource):
     def get(self):
         args = sync_parser.parse_args()
         emails = args['email']
-        emails = db.email.find({'$in': {'email': emails}})
-        results = db.account.find({'$in': {'email': emails}})
+        emails = db.email.find({'email': {'$in': emails}})
+        results = db.account.find({'email': {'$in': emails}})
         return {'code': 200, 'data': [r for r in results]}
+
+    def post(self):
+        pass
+
+
+# 制作完成的账户
+class FinishedAccount(Resource):
+    @auth.login_required
+    def get(self):
+        def cursor(limit, skip):
+            result = db.account.aggregate([{'$match': {'operate_status': 1, 'operator': g.user.username}},
+                                           {'$lookup': {'from': 'email', 'localField': 'email', 'foreignField': '_id',
+                                                        'as': 'email_info'}},
+                                           {'$lookup': {'from': 'address', 'localField': 'address',
+                                                        'foreignField': '_id',
+                                                        'as': 'address_info'}},
+                                           {'$lookup': {'from': 'proxy', 'localField': 'proxy', 'foreignField': '_id',
+                                                        'as': 'proxy_info'}},
+                                           {'$project': {'email': 0, 'address': 0, 'proxy': 0}},
+                                           {'$limit': limit},
+                                           {'$skip': skip}
+                                           ])
+            count = db.account.find({'operate_status': 0, 'operator': g.user.username}).count()
+            return result, count
+
+        args = proxy_get_parser.parse_args()
+        page = Page(cursor, args['page'], args['limit'])
+        return {'code': 200, 'msg': 'success', 'data': page.page()}

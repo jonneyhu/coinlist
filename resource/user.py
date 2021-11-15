@@ -32,16 +32,13 @@ parser.add_argument('username', type=str)
 parser.add_argument('password', type=str)
 
 
-fields= {
-    'username':fields.String(),
-    'level':fields.Integer()
-}
+
 
 
 class UserResource(Resource):
     # 获取用户
     def get(self):
-        users = User.objects()
+        users = User.objects.paginate(page=1,per_page=10)
         return {'code':200,'data':[dict(u) for u in users]}
 
     # 用户注册
@@ -56,11 +53,13 @@ class UserResource(Resource):
 
 
 class Login(Resource):
-    def get(self):
+    def post(self):
         args = parser.parse_args()
         password = md5(args['password'].encode('utf8')).hexdigest()
         user = User.objects(username=args['username'], password=password).first()
-        return {'code': 200, 'data': user.generate_token()}
+        if user:
+            return {'code': 200, 'data': user.generate_token()}
+        return {'code':400,'msg':'用户不存在'}
 
 
 class AboutUs(Resource):
