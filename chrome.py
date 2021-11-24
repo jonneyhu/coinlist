@@ -338,11 +338,16 @@ def coinlist():
     # time.sleep(10)
     # driver.find_element('xpath', '//*[@id="user_email"]').send_keys(email)
     # driver.find_element('xpath', '//*[@id="user_password"]').send_keys(password)
-    check_captcha(driver)
+    hcaptch_link = 'https://newassets.hcaptcha.com/captcha/v1/b2f2cbc/hcaptcha-challenge.js'
+    driver.execute_script('window.open("{}")'.format(hcaptch_link))
+    driver.switch_to.window(driver.window_handles[1])
+    print(driver.current_url)
     cookie = {'name': 'hc_accessibility',
-              'value': 'ji7YocBqaytJM1sqMZAO8lkb9XvMuM0TCrlAXqlj6OZlVi2DdsZBVno3kCC+a0YnokkEHnxsPjZwuBncQSuvK+8RifZwNbvwGMaSGnHz3prxgWlcLSS1nuRA5aUwmfUveXC+BgEQFaq6s6gofD4/JH6GJw3fHla8BfPE/W0Bv7nnRZpBZTTsfdfMAz+IqEdkjr797O0mC++VsSIEnQo62ZfPKUo7N858Zk0UM5gOZKdeE2k+uLdIcAs8lI7mXnctoCSAAho7dmOdsFP/8CEfVwHKUD67fFp2os6lUU1RL7E8gqc1Kdl3eh4RYwHCcMBP3FJWLds4QyhKhbQIRmH9IpxCzToiN4wSRX1NTn9Vqe/cwzIof6H5wHwrRhYK2QKVIYyRju1NH7oE6KiZsgG2wwzyG+nk599vtLfOuW9Rl88QgNzS+82Qd5d8xosfkIiGl+UvpZSslljVlfERjDPdd8M408xDx8S9aq9homGAX0GXWcxsfSpTx/hw3F+e0sQY/AIJOPiOVGwzhTMduULBfC0YUSQ6LsyUhWEAviudxoGjOLU3Gg3zJr6s8qv9kzulOAc+BrznAbZVdPJk8bjLFp2J9g1DYYtExHoa18klcYTqZ3Gopg86iim5GVpG61rxUihAPB6LDHVcUCdb8xfOecGvxip6rZQ4xw7anwjN/gr/8aqgmDKmRxnNr6lhvoqIkzqv+NUC0XIt8EhfGn9Zsf5aXuY3YWbr38Ti1VT9H49TzIAFnhY7pRm9jIGYMKtOA9wxxnijArk09kebyp4tspoeQ2wkbWFI/DZTEEHPIWywy5O+Ypy/Sd5NW5eIARc3i3Ek9JdT/JSwVVAYg6GAVvteS5w2k04lsn2UIOkgDHuecdQEwwcq32Y2O1y5LeQtWkSw4ZNkGytaUDOzu69OLZUxSg4sMnrKfsIUdILEQyKKtPypKmHI8N9Rwbr1orrHIsb4uSZ9MROUmFqXiQGi0NLvxGAmv/NY4EtYKepdKRW/TrNVlfZ0/ivj7VU2XjfXKy4zS+LsE92FfGG42VSie9J5TDE4HmQG0y3WQw==08jaL7WiPB85L+Kj',
-              'path': '/', 'expires': '2021-11-23T20:44:31.225Z', 'secure': True, 'domain': '.hcaptch.com'}
+              'value': '7Sl61hh/zJWSV1C5m0ynBsKrnrGZan5cAtVxTpHqM3xSvvOel8h++grOdYU3ZTjwLZYcUEGUAjlEaVxa4doxg7en2wv9sTlgatuMLjHOzLC9/kYBB9ow5/w4uAwODE4RLFwghkfpX8jVJwquqpCE3Svq+rqZypHgc2e6fiI+jOwjM22sFQI1ixxiDizKRJ0jUh09oDj7Y4p3b+ePzK65J0A8f7z92XKnU7JjcOMZ3dxe3fOb4y2L3qvSGhuvmsBDB8OjjEk74dVk5azEKIv34O11IeVsujHYbFjOyEZZhz61/otbwh6tT3S4LjAa1QO9ThYl7D2K4mJ6lMrWo76k7/joznqav5BV5aJALLepyifH51XO9A0WVw3Aom1HYko2hsT2x5I+PzSBjgPqG4zCwS2lhmmCTvYFd9dIdZkoIPcIsY1oL2KUXCQLO8tGOkOGpLnV1BYDUpsc1M9YCQwmZGY5/owVqN+krLIdZ668I1F4pSDq0tdGz45gfuX9ytKwT/yW2zFiTUnxB7ojH2Zcc2NAKIEToaU7EB/stVHZMD+oGHBuQugW9GOwNGs8GfbKyi72+eO1NZiujOqaOJoEy2dT1IXczFrxz091EoEGqqSPwnzNWyuJ5bEjY3zS9L5NpqIYtzX8tNvPoNp63RsBVrNSCJUrKeZgyNcDfbwEwxzOCd4CzPmPWyPtRic7W07KgLrkyjEojI9PeU8awW9PV++Se5kGU5o4VxQ4tU/CoJhH2+d6EiPvyo3KmDq3Kf7r6vGVmab/mYXvtEIVSGbdd/3WJtlhxkNwYK1bfpCkVobUFUoAAdMgmKNFXynKfkWKQb9RMB4/fYvzyy4TK4u8aAyFT/zxnN6cF7tJMr3OwggWhqaAKQiukIgX1lrxt1z8+nnoF/+X8hhlkRM94EwQB7pKh/xcjhS0jVEkYVUxYwphZOUQkLpsPRQTAKaYTRIR3XUnT7F8lVZ+uaAnfeouU+D4Cs80nmfp+W32UyM/q64hGmA0EX2+8tiFYs3kJOYTog+dOk2o3UHrndmiAS1XIA==g9qlWMo6H0UZfz+9',
+              'path': '/', 'expires': '2021-11-24T20:44:31.225Z', 'secure': True,'sameSite':'None'}
     driver.add_cookie(cookie_dict=cookie)
+    time.sleep(5)
+    driver.switch_to.window(driver.window_handles[0])
     waitAndClick(driver,'//*[@id="new_user"]/div/div[5]/input')
     # driver.find_element('xpath', '//*[@id="new_user"]/div/div[5]/input').click()
 
