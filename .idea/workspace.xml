@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53546a14-f61e-43f6-bd69-997093ce42c2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/zks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/coinlist.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/coinlist.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chrome.py" beforeDir="false" afterPath="$PROJECT_DIR$/chrome.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zks.py" beforeDir="false" afterPath="$PROJECT_DIR$/zks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +37,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.zks">
+  <component name="RunManager" selected="Python.chrome">
     <configuration name="chrome" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="coinlist" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -86,8 +84,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.zks" />
         <item itemvalue="Python.chrome" />
+        <item itemvalue="Python.zks" />
       </list>
     </recent_temporary>
   </component>
@@ -106,7 +104,10 @@
       <workItem from="1637145473824" duration="1922000" />
       <workItem from="1637232918120" duration="5295000" />
       <workItem from="1637416599241" duration="20071000" />
-      <workItem from="1637544004425" duration="6708000" />
+      <workItem from="1637544004425" duration="8522000" />
+      <workItem from="1637630460256" duration="22793000" />
+      <workItem from="1637664982834" duration="6196000" />
+      <workItem from="1637672331498" duration="373000" />
     </task>
     <servers />
   </component>
@@ -118,33 +119,37 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="738" y="105" key="#chrome/0.0.1920.1040@0.0.1920.1040" timestamp="1637066554414" />
+    <state x="647" y="206" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1637635785697">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="647" y="206" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1637635785697" />
     <state x="504" y="394" key="FileChooserDialogImpl" timestamp="1636983943491">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="504" y="394" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1636983943491" />
-    <state width="1340" height="171" key="GridCell.Tab.0.bottom" timestamp="1637583589912">
+    <state width="1512" height="223" key="GridCell.Tab.0.bottom" timestamp="1637672300265">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1340" height="171" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1637583589912" />
-    <state width="1340" height="171" key="GridCell.Tab.0.center" timestamp="1637583589912">
+    <state width="1512" height="223" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1637672300265" />
+    <state width="1512" height="223" key="GridCell.Tab.0.center" timestamp="1637672300265">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1340" height="171" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1637583589912" />
-    <state width="1340" height="171" key="GridCell.Tab.0.left" timestamp="1637583589912">
+    <state width="1512" height="223" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1637672300265" />
+    <state width="1512" height="223" key="GridCell.Tab.0.left" timestamp="1637672300265">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1340" height="171" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1637583589912" />
-    <state width="1340" height="171" key="GridCell.Tab.0.right" timestamp="1637583589912">
+    <state width="1512" height="223" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1637672300265" />
+    <state width="1512" height="223" key="GridCell.Tab.0.right" timestamp="1637672300265">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1340" height="171" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1637583589912" />
+    <state width="1512" height="223" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1637672300265" />
     <state x="225" y="284" key="SettingsEditor" timestamp="1636984025056">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="225" y="284" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1636984025056" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/coinlist$chrome.coverage" NAME="chrome Coverage Results" MODIFIED="1637544466172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/coinlist$zks.coverage" NAME="zks Coverage Results" MODIFIED="1637583589903" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/coinlist$chrome.coverage" NAME="chrome Coverage Results" MODIFIED="1637671715355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/coinlist$zks.coverage" NAME="zks Coverage Results" MODIFIED="1637669141396" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

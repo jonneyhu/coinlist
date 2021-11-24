@@ -329,11 +329,7 @@ def coinlist():
     # 3.发起请求
     driver.get('https://coinlist.co/login')
 
-    # driver.execute_script('window.open("https://accounts.hcaptcha.com/verify_email/4e16c829-5375-47df-984d-5afac97fd18a")')
-    # all_handles = driver.window_handles
-    # driver.switch_to.window(all_handles[1])
-    # waitAndClick(driver,'//*[@id="root"]/div/div[3]/div/div[3]/button')
-    # time.sleep(6)
+
     # driver.switch_to.window(all_handles[0])
     waitAndClear(driver,'//*[@id="user_email"]')
     waitAndClear(driver,'//*[@id="user_password"]')
@@ -343,15 +339,20 @@ def coinlist():
     # driver.find_element('xpath', '//*[@id="user_email"]').send_keys(email)
     # driver.find_element('xpath', '//*[@id="user_password"]').send_keys(password)
     check_captcha(driver)
+    cookie = {'name': 'hc_accessibility',
+              'value': 'ji7YocBqaytJM1sqMZAO8lkb9XvMuM0TCrlAXqlj6OZlVi2DdsZBVno3kCC+a0YnokkEHnxsPjZwuBncQSuvK+8RifZwNbvwGMaSGnHz3prxgWlcLSS1nuRA5aUwmfUveXC+BgEQFaq6s6gofD4/JH6GJw3fHla8BfPE/W0Bv7nnRZpBZTTsfdfMAz+IqEdkjr797O0mC++VsSIEnQo62ZfPKUo7N858Zk0UM5gOZKdeE2k+uLdIcAs8lI7mXnctoCSAAho7dmOdsFP/8CEfVwHKUD67fFp2os6lUU1RL7E8gqc1Kdl3eh4RYwHCcMBP3FJWLds4QyhKhbQIRmH9IpxCzToiN4wSRX1NTn9Vqe/cwzIof6H5wHwrRhYK2QKVIYyRju1NH7oE6KiZsgG2wwzyG+nk599vtLfOuW9Rl88QgNzS+82Qd5d8xosfkIiGl+UvpZSslljVlfERjDPdd8M408xDx8S9aq9homGAX0GXWcxsfSpTx/hw3F+e0sQY/AIJOPiOVGwzhTMduULBfC0YUSQ6LsyUhWEAviudxoGjOLU3Gg3zJr6s8qv9kzulOAc+BrznAbZVdPJk8bjLFp2J9g1DYYtExHoa18klcYTqZ3Gopg86iim5GVpG61rxUihAPB6LDHVcUCdb8xfOecGvxip6rZQ4xw7anwjN/gr/8aqgmDKmRxnNr6lhvoqIkzqv+NUC0XIt8EhfGn9Zsf5aXuY3YWbr38Ti1VT9H49TzIAFnhY7pRm9jIGYMKtOA9wxxnijArk09kebyp4tspoeQ2wkbWFI/DZTEEHPIWywy5O+Ypy/Sd5NW5eIARc3i3Ek9JdT/JSwVVAYg6GAVvteS5w2k04lsn2UIOkgDHuecdQEwwcq32Y2O1y5LeQtWkSw4ZNkGytaUDOzu69OLZUxSg4sMnrKfsIUdILEQyKKtPypKmHI8N9Rwbr1orrHIsb4uSZ9MROUmFqXiQGi0NLvxGAmv/NY4EtYKepdKRW/TrNVlfZ0/ivj7VU2XjfXKy4zS+LsE92FfGG42VSie9J5TDE4HmQG0y3WQw==08jaL7WiPB85L+Kj',
+              'path': '/', 'expires': '2021-11-23T20:44:31.225Z', 'secure': True, 'domain': '.hcaptch.com'}
+    driver.add_cookie(cookie_dict=cookie)
     waitAndClick(driver,'//*[@id="new_user"]/div/div[5]/input')
     # driver.find_element('xpath', '//*[@id="new_user"]/div/div[5]/input').click()
 
-    time.sleep(600)
     # sercret = 't4436e6qkjtpo2tmk5ukjv33'
     sercret = 'qypchb2ukiexvyq7cwztfalt'
     code = googleAuth(sercret)
-    driver.find_element('xpath', '//*[@id="multi_factor_authentication_totp_otp_attempt"]').send_keys(code)
-    driver.find_element('xpath', '//*[@id="new_multi_factor_authentication_totp"]/div/div[2]/input').click()
+    waitAndSend(driver, '//*[@id="multi_factor_authentication_totp_otp_attempt"]', code)
+    # driver.find_element('xpath', '//*[@id="multi_factor_authentication_totp_otp_attempt"]').send_keys(code)
+    waitAndClick(driver, '//*[@id="new_multi_factor_authentication_totp"]/div/div[2]/input')
+    # driver.find_element('xpath', '//*[@id="new_multi_factor_authentication_totp"]/div/div[2]/input').click()
     time.sleep(6)
     check_captcha(driver)
     registrySale(driver)
