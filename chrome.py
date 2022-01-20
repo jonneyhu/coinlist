@@ -312,7 +312,7 @@ def coinlist():
     # 1.实例化一个ChromeOptions对象
     option = ChromeOptions()
     option.add_experimental_option('excludeSwitches', ['enable-automation'])
-    option.add_argument('--user-data-dir=D:\mychrome\chrome1')
+    # option.add_argument('--user-data-dir=D:\mychrome\chrome1')
     option.add_argument('--proxy-server=socks://45.76.192.110:5022')
     # 2.将ChromeOptions实例化的对象option作为参数传给Crhome对象
     # path = '/home/jonney/Downloads/chromedriver/chromedriver'
@@ -322,7 +322,8 @@ def coinlist():
     password = 'computer4411'
     links = ['https://coinlist.co/umee-option-1/onboarding','https://coinlist.co/umee-option-2/onboarding']
 
-    path='chromedriver.exe'
+    # path='chromedriver.exe'
+    path = 'google-chrome'
     s = Service(path)
     driver = webdriver.Chrome(service=s, options=option)
 
